@@ -150,89 +150,22 @@ public class Robot extends TimedRobot {
 	  //driveTrain.tryCurveDrive(rightStick.getY(), -rightStick.getX(), rightStick.getRawButton(EXPELL_BUTTON));
 
     // Gear Shifter
-    if (rightStick.getRawAxis(JOYSTICK_SLIDER_AXIS) < 0) {
+    if (leftStick.getRawAxis(JOYSTICK_SLIDER_AXIS) < 0) {
       driveTrain.setGear(driveTrain.HIGH_GEAR);
-    } else {
+    }
+    
+    else {
       driveTrain.setGear(driveTrain.LOW_GEAR);
     }
     
-    driveTrain.publishDataToSmartDash();
     
-    // Pickup Arm
-    if (rightStick.getRawButton(DEPLOY_ARM_BUTTON)) {
-      pickupArm.moveArm(pickupArm.DEPLOY);
-    } else if (rightStick.getRawButton(RETRACT_ARM_BUTTON)) {
-      pickupArm.moveArm(pickupArm.RETRACT);
-    }
-    
-    // Pickup Wheels
-    if (rightStick.getRawButton(INTAKE_BUTTON)) {
-      pickupArm.spinIntake(pickupArm.DEFAULT_INTAKE_SPEED);
-    } else if (rightStick.getRawButton(EXPELL_BUTTON)) {
-      //pickupArm.spinIntake(-1 * pickupArm.DEFAULT_INTAKE_SPEED);
-    } else {
-      pickupArm.spinIntake(0);
-    }
-    
-    // Winch
-    if (rightStick.getRawButton(WINCH_CLIMB_BUTTON)) {
-      winch.spin(winch.DEFAULT_CLIMB_SPEED);
-    } else {
-      winch.spin(0);
-    }
-    
-    // Tuning Mode
-    if (leftStick.getRawButtonPressed(TOGGLE_TUNING_MODE_ENABLED_BUTTON)) {
-      tuningModeActive = !tuningModeActive;
-      shooter.stop();
-    }
-    SmartDashboard.putBoolean("Tuning Mode Active", tuningModeActive);
-    
-    if (tuningModeActive) {
-      runTuningCode();
-      return;
-    }
-    
-    // Shooter
-    if (leftStick.getRawButtonPressed(TOGGLE_SHOOTER_CONTROL_BUTTON)) {
-      shooter.stop();
-      shooterControlMode = (shooterControlMode + 1) % 2;
-    }
-    
-    /* shooterControlMode = 0 = manual control
-     * shooterControlMode = 1 = full auto tracking/shooting */
-    if (shooterControlMode == 0) {   
-      shooter.manualControl(leftStick);
-    } else if (shooterControlMode == 1) {      
-      if (!shooter.pidIsEnabled()) {
-        shooter.enablePIDControllers();
+    //Pickup arm lift
+    if (leftStick.getRawButton(DEPLOY_ARM_BUTTON)) {
+        pickupArm.moveArm(pickupArm.DEPLOY);
+      } else if (rightStick.getRawButton(RETRACT_ARM_BUTTON)) {
+        pickupArm.moveArm(pickupArm.RETRACT);
       }
-      shooter.fullAutoShooting();
-    }
     
-    shooter.publishDataToSmartDash();
-    
-    // Cameras (note that most img processing code is already called by shooter.fullAutoShooting())
-    if (rightStick.getRawButtonPressed(TOGGLE_ACTIVE_CAMERA_BUTTON)) {
-      selectedStreamingSource = (selectedStreamingSource + 1) % 4;
-    }
-    
-    if (selectedStreamingSource == 0) {
-      camController.getGearCamFrame(outputFrame);
-      SmartDashboard.putString("Selected Streaming Source", "gearCam");
-    } else if (selectedStreamingSource == 1) {
-      camController.getTurretCamFrame(outputFrame);
-      SmartDashboard.putString("Selected Streaming Source", "turretCam");
-    } else if (selectedStreamingSource == 2) {
-      outputFrame = imgProcessor.getOriginalFrame();
-      SmartDashboard.putString("Selected Streaming Source", "Processed Img (overlay)");
-    } else if (selectedStreamingSource == 3) {
-      outputFrame = imgProcessor.getProcessedFrame();
-      SmartDashboard.putString("Selected Streaming Source", "Processed Img (no overlay)");
-    }
-    camController.pushFrameToDash(outputFrame);
-    
-    imgProcessor.publishDataToSmartDash();
   }
   
   
