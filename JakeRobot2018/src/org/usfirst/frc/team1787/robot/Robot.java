@@ -45,7 +45,13 @@ public class Robot extends TimedRobot {
   private final int INTAKE_BUTTON = 1;
   private final int EXPELL_BUTTON = 2;
   
-  private final int WINCH_CLIMB_BUTTON = 8;
+  private final int HIGH_POWER_SHOOTING_BUTTON = 10;
+  private final int BALANCED_POWER_SHOOTING_BUTTON = 9;
+  private final int SWITCH_POWER_SHOOTING_BUTTON = 8;
+  private final int REVERSE_SHOOTER_BUTTON = 2;
+  
+  private final int WINCH_CLIMB_FORWARD_BUTTON = 13;
+  private final int WINCH_CLIMB_REVERSE_BUTTON = 14;
 
   private final int TOGGLE_SHOOTER_CONTROL_BUTTON = 2;
   
@@ -162,10 +168,58 @@ public class Robot extends TimedRobot {
     //Pickup arm lift
     if (leftStick.getRawButton(DEPLOY_ARM_BUTTON)) {
         pickupArm.moveArm(pickupArm.DEPLOY);
-      } else if (rightStick.getRawButton(RETRACT_ARM_BUTTON)) {
-        pickupArm.moveArm(pickupArm.RETRACT);
-      }
+    } else if (rightStick.getRawButton(RETRACT_ARM_BUTTON)) {
+      pickupArm.moveArm(pickupArm.RETRACT);
+    }
     
+    
+    // Pickup Wheels
+    if (rightStick.getRawButton(INTAKE_BUTTON) || leftStick.getRawButton(INTAKE_BUTTON)) {
+      pickupArm.spinIntake(pickupArm.DEFAULT_INTAKE_SPEED);
+    } else if (rightStick.getRawButton(EXPELL_BUTTON)) {
+      pickupArm.spinIntake(-1 * pickupArm.DEFAULT_INTAKE_SPEED);
+    } else {
+      pickupArm.spinIntake(0);
+    }
+    
+    
+    //Climb
+    if (rightStick.getRawButton(WINCH_CLIMB_FORWARD_BUTTON)) {
+      winch.spin(winch.DEFAULT_CLIMB_SPEED);
+    } else if (rightStick.getRawButton(WINCH_CLIMB_REVERSE_BUTTON)) {
+    	winch.spin(winch.DEFAULT_DECEND_SPEED);
+    } else {
+      winch.spin(0);
+    }
+    
+    
+    //Turret
+    if (rightStick.getRawAxis(JOYSTICK_TWIST_AXIS) > 0.1) {
+    	turret.manualControl(0.25);
+    }
+    else if (rightStick.getRawAxis(JOYSTICK_TWIST_AXIS) < -0.1) {
+    	turret.manualControl(-0.25);
+    }
+    else {
+    	turret.manualControl(0);
+    }
+    
+    //Shooter
+    if (rightStick.getRawButton(HIGH_POWER_SHOOTING_BUTTON)) {
+    	shooter.manualControl(0, 1, 0.25);
+    }
+    else if (rightStick.getRawButton(BALANCED_POWER_SHOOTING_BUTTON)) {
+    	shooter.manualControl(0, 0.66, 0.25);
+    }
+    else if (rightStick.getRawButton(SWITCH_POWER_SHOOTING_BUTTON)) {
+    	shooter.manualControl(0, 0.33, 0.25);
+    }
+    else if (leftStick.getRawButton(REVERSE_SHOOTER_BUTTON)) {
+    	shooter.manualControl(0, -0.25, -0.25);
+    }
+    else {
+    	shooter.manualControl(0, 0, 0);
+    }
   }
   
   

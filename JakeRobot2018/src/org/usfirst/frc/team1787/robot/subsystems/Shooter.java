@@ -67,7 +67,7 @@ public class Shooter {
   }
   
   public void manualControl(double turretMoveValue, double flywheelMoveValue, double feederMoveValue) {
-    turret.manualControl(turretMoveValue);
+    //turret.manualControl(turretMoveValue);
     flywheel.manualControl(flywheelMoveValue);
     feeder.spin(feederMoveValue);
   }
