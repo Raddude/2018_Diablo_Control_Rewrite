@@ -195,10 +195,10 @@ public class Robot extends TimedRobot {
     
     //Turret
     if (rightStick.getRawAxis(JOYSTICK_TWIST_AXIS) > 0.1) {
-    	turret.manualControl(0.25);
+    	turret.manualControl(0.75);
     }
     else if (rightStick.getRawAxis(JOYSTICK_TWIST_AXIS) < -0.1) {
-    	turret.manualControl(-0.25);
+    	turret.manualControl(-0.75);
     }
     else {
     	turret.manualControl(0);
@@ -206,16 +206,16 @@ public class Robot extends TimedRobot {
     
     //Shooter
     if (rightStick.getRawButton(HIGH_POWER_SHOOTING_BUTTON)) {
-    	shooter.manualControl(0, 1, 0.25);
+    	shooter.manualControl(0, 1, 0.5);
     }
     else if (rightStick.getRawButton(BALANCED_POWER_SHOOTING_BUTTON)) {
-    	shooter.manualControl(0, 0.66, 0.25);
+    	shooter.manualControl(0, 0.66,0.5);
     }
     else if (rightStick.getRawButton(SWITCH_POWER_SHOOTING_BUTTON)) {
-    	shooter.manualControl(0, 0.33, 0.25);
+    	shooter.manualControl(0, 0.33, 0.5);
     }
     else if (leftStick.getRawButton(REVERSE_SHOOTER_BUTTON)) {
-    	shooter.manualControl(0, -0.25, -0.25);
+    	shooter.manualControl(0, -0.25, -0.5);
     }
     else {
     	shooter.manualControl(0, 0, 0);

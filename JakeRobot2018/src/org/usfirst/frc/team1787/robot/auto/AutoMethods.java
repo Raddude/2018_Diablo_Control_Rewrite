@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1787.robot.auto;
 
+import org.usfirst.frc.team1787.robot.subsystems.DriveTrain;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -11,9 +13,11 @@ public class AutoMethods {
   // Keep track of the current action being performed in the selected routine
   private int currStage = 0;
   private boolean currStageComplete = false;
+  private int autoTimer = 0;
   
   private static AutoMethods instance = new AutoMethods();
-
+  private DriveTrain driveTrain = DriveTrain.getInstance();
+  
   private AutoMethods() {
     // Add options to chooser
     autoChooser.addDefault("auto1", 1);
@@ -35,6 +39,10 @@ public class AutoMethods {
     } else if (selectedAuto == 3) {
       auto3();
     }
+  }
+  
+  public void autoInit() {
+	  autoTimer = 0;
   }
 
   public void auto1() {
@@ -65,11 +73,17 @@ public class AutoMethods {
   }
   
   public void auto2() {
-    
+	  if (autoTimer < 100) {
+		  driveTrain.setDriveOutputs(0.25, 0.25);
+	  }
+	  autoTimer++;
   }
   
   public void auto3() {
-    
+	  if (autoTimer < 100) {
+		  driveTrain.setDriveOutputs(-0.25, -0.25);
+	  }
+	  autoTimer++;
   }
   
   public void zeroAllSensors() {
