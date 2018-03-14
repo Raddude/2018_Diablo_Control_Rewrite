@@ -1,6 +1,7 @@
 package org.usfirst.frc.team1787.robot.auto;
 
 import org.usfirst.frc.team1787.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team1787.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,10 +14,10 @@ public class AutoMethods {
   // Keep track of the current action being performed in the selected routine
   private int currStage = 0;
   private boolean currStageComplete = false;
-  private int autoTimer = 0;
   
   private static AutoMethods instance = new AutoMethods();
   private DriveTrain driveTrain = DriveTrain.getInstance();
+  private Intake intake = Intake.getInstance();
   
   private AutoMethods() {
     // Add options to chooser
@@ -35,14 +36,14 @@ public class AutoMethods {
     if (selectedAuto == 1) {
       auto1();
     } else if (selectedAuto == 2) {
-      auto2();
+      //auto2();
     } else if (selectedAuto == 3) {
-      auto3();
+      //auto3();
     }
   }
   
   public void autoInit() {
-	  autoTimer = 0;
+	  
   }
 
   public void auto1() {
@@ -72,19 +73,58 @@ public class AutoMethods {
     }
   }
   
-  public void auto2() {
+  
+  
+  
+  public void auto0(int autoTimer) {
+	  if (autoTimer < 100) {
+		  intake.spinIntake(0.5);
+	  }
+	  else {
+		  intake.stop();
+	  }
+  }
+  
+  public void auto2(int autoTimer) {
 	  if (autoTimer < 100) {
 		  driveTrain.setDriveOutputs(0.25, 0.25);
 	  }
-	  autoTimer++;
+	  else {
+		  driveTrain.stop();
+	  }
   }
   
-  public void auto3() {
+  public void auto3(int autoTimer) {
 	  if (autoTimer < 100) {
 		  driveTrain.setDriveOutputs(-0.25, -0.25);
 	  }
-	  autoTimer++;
+	  else {
+		  driveTrain.stop();
+	  }
   }
+  
+  public void auto4(int autoTimer) {
+	  if (autoTimer < 100) {
+		  driveTrain.setDriveOutputs(-0.25, 0.25);
+	  }
+	  else {
+		  driveTrain.stop();
+	  }
+  }
+  
+  public void auto5(int autoTimer) {
+	  if (autoTimer < 100) {
+		  driveTrain.setDriveOutputs(0.25, -0.25);
+	  }
+	  else {
+		  driveTrain.stop();
+	  }
+  }
+  
+  
+  
+  
+  
   
   public void zeroAllSensors() {
     

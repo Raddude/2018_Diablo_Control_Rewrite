@@ -15,9 +15,11 @@ import org.usfirst.frc.team1787.robot.subsystems.Winch;
 import org.usfirst.frc.team1787.robot.vision.CameraController;
 import org.usfirst.frc.team1787.robot.vision.ImageProcessor;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -95,6 +97,12 @@ public class Robot extends TimedRobot {
   // Preferences (interface used to get values from the SmartDash)
   Preferences prefs = Preferences.getInstance();
   
+  
+  //Auto Code
+  SendableChooser<Integer> autoChooser;
+  String gameData;
+  private int autonomousTimer;
+  
   /* ----------------------------------------------------------------
    * Member variables end here; only functions below this point!
    * ---------------------------------------------------------------- */
@@ -105,6 +113,13 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 	  // Default Period is 0.02 seconds per loop.
 	  this.setPeriod(0.02);
+	  
+	  autoChooser = new SendableChooser<Integer>();
+	  autoChooser.addDefault("Move Straight", 1);
+	  autoChooser.addObject("Do Nothing", 0);
+	  autoChooser.addObject("Short/Left Side", 2);
+	  autoChooser.addObject("Long/Right Side", 3);
+	  SmartDashboard.putData("Auto Chooser", autoChooser);
 	  
 	  /*
 	   * TODO:
@@ -143,6 +158,39 @@ public class Robot extends TimedRobot {
    * disabled to teleop will cause teleopInit() to be run once, and then teleopPeriodic()
    * to be looped until a different mode is entered.
    */
+
+  
+  
+  
+  
+  public void autonomousInit() {
+	    autonomousTimer = 0;
+  }
+
+  public void autonomousPeriodic() {
+	  
+    gameData = DriverStation.getInstance().getGameSpecificMessage();
+    if (gameData.length() > 0) {
+    	//Short/Left is 2, Long/Right is 3
+    	if (gameData.charAt(0) == 'L' && autoChooser.getSelected() == 2) {
+    		auto.auto2(autonomousTimer);
+    	}
+    	else if (gameData.charAt(1) == 'L' && autoChooser.getSelected() == 2) {
+    		auto.auto3(autonomousTimer);
+    	}
+    	else if (gameData.charAt(0) == 'R' && autoChooser.getSelected() == 3) {
+    		auto.auto4(autonomousTimer);
+    	}
+    	else if (gameData.charAt(1) == 'R' && autoChooser.getSelected() == 3) {
+    		auto.auto5(autonomousTimer);
+    	}
+    	
+    	autonomousTimer++;
+    	
+    	
+    }
+  }
+  
   
   
   
@@ -226,19 +274,9 @@ public class Robot extends TimedRobot {
   
   
   
-  public void autonomousInit() {
-	    
-  }
-
-  public void autonomousPeriodic() {
-    
-  }
-  
-  
-  
-  
   public void disabledInit() {
     shooter.stop();
+    autonomousTimer = 0;
   }
 	  
   public void disabledPeriodic() {
