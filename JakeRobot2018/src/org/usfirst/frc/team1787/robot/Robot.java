@@ -184,6 +184,9 @@ public class Robot extends TimedRobot {
     	else if (gameData.charAt(1) == 'R' && autoChooser.getSelected() == 3) {
     		auto.auto5(autonomousTimer);
     	}
+    	else {
+    		auto.auto0(autonomousTimer);
+    	}
     	
     	autonomousTimer++;
     	
