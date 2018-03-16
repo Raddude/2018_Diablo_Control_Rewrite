@@ -15,6 +15,7 @@ import org.usfirst.frc.team1787.robot.subsystems.Winch;
 import org.usfirst.frc.team1787.robot.vision.CameraController;
 import org.usfirst.frc.team1787.robot.vision.ImageProcessor;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
@@ -46,6 +47,8 @@ public class Robot extends TimedRobot {
   private final int RETRACT_ARM_BUTTON = 4;
   private final int INTAKE_BUTTON = 1;
   private final int EXPELL_BUTTON = 2;
+  private final int INTAKE_CAMERA_BUTTON = 3;
+  private final int TOP_CAMERA_BUTTON = 4;
   
   private final int HIGH_POWER_SHOOTING_BUTTON = 10;
   private final int BALANCED_POWER_SHOOTING_BUTTON = 9;
@@ -103,6 +106,10 @@ public class Robot extends TimedRobot {
   String gameData;
   private int autonomousTimer;
   
+  //Camera code
+  CameraServer server = CameraServer.getInstance();
+  
+  
   /* ----------------------------------------------------------------
    * Member variables end here; only functions below this point!
    * ---------------------------------------------------------------- */
@@ -120,6 +127,10 @@ public class Robot extends TimedRobot {
 	  autoChooser.addObject("Short/Left Side", 2);
 	  autoChooser.addObject("Long/Right Side", 3);
 	  SmartDashboard.putData("Auto Chooser", autoChooser);
+	  
+	  
+	  server.startAutomaticCapture(0);
+	  //server.startAutomaticCapture(1);
 	  
 	  /*
 	   * TODO:
@@ -170,6 +181,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
 	  
     gameData = DriverStation.getInstance().getGameSpecificMessage();
+    
     if (gameData.length() > 0) {
     	//Short/Left is 2, Long/Right is 3
     	if (gameData.charAt(0) == 'L' && autoChooser.getSelected() == 2) {
@@ -271,6 +283,16 @@ public class Robot extends TimedRobot {
     else {
     	shooter.manualControl(0, 0, 0);
     }
+    
+    //Switch cams
+    /*
+    if (rightStick.getRawButtonPressed(INTAKE_CAMERA_BUTTON)) {
+    	server.startAutomaticCapture(0);
+    }
+    else if (rightStick.getRawButtonPressed(TOP_CAMERA_BUTTON)) {
+    	server.startAutomaticCapture(1);
+    }
+    */
   }
   
   
@@ -284,104 +306,7 @@ public class Robot extends TimedRobot {
 	  
   public void disabledPeriodic() {
 		  
-  }
-  
-  
-  
-  
-  
-  public void runTuningCode() {
-    /* Note: To have preferences show up in the appropriate shuffleboard widget, 
-     * they must first be added to network tables through Outline Viewer */
-    
-    if (leftStick.getRawButtonPressed(CHANGE_CURRENT_TUNING_MODE_BUTTON)) {
-      shooter.stop();
-      tuningMode = (tuningMode + 1) % 4;
-    }
-    
-    /* tuningMode = 0 = turret PID tuning
-     * tuningMode = 1 = flywheel PID tuning
-     * tuningMode = 2 = HSV filter tuning
-     * tuningMode = 3 = contour filter tuning */
-    if (tuningMode == 0) {
-      if (!shooter.pidIsEnabled()) {  
-        double turretP = prefs.getDouble("turretP", 0);
-        double turretI = prefs.getDouble("turretI", 0);
-        double turretD = prefs.getDouble("turretD", 0);
-        turret.getPIDController().setPID(turretP, turretI, turretD);
-        
-        // turret error is in [degrees]
-        double turretErrorTolerance = prefs.getDouble("turretErrorTolerance", 0);
-        turret.getPIDController().setAbsoluteTolerance(turretErrorTolerance);
-        
-        turret.getPIDController().enable();
-      }
-      shooter.trackTarget();
-      
-    } else if (tuningMode == 1) {
-      if (!shooter.pidIsEnabled()) {
-        double flywheelP = prefs.getDouble("flywheelP", 0);
-        double flywheelI = prefs.getDouble("flywheelI", 0);
-        double flywheelD = prefs.getDouble("flywheelD", 0);
-        flywheel.getPIDController().setPID(flywheelP, flywheelI, flywheelD);
-        
-        // flywheel error is in [revolutions/second]
-        double flywheelErrorTolerance = prefs.getDouble("flywheelErrorTolerance", 0);
-        flywheel.getPIDController().setAbsoluteTolerance(flywheelErrorTolerance);
-        
-        flywheel.getPIDController().enable();
-      }
-      double flywheelSetpoint = prefs.getDouble("flywheelSetpoint", 0);
-      flywheel.getPIDController().setSetpoint(flywheelSetpoint);
-      
-    } else if (tuningMode == 2) {
-      shooter.manualControl(leftStick);
-      
-      double hMin = prefs.getDouble("hMin", 0);
-      double sMin = prefs.getDouble("sMin", 0);
-      double vMin = prefs.getDouble("vMin", 0);
-      Scalar minRange = new Scalar(hMin, sMin, vMin);
-      
-      double hMax = prefs.getDouble("hMax", 180);
-      double sMax = prefs.getDouble("sMax", 255);
-      double vMax = prefs.getDouble("vMax", 255);
-      Scalar maxRange = new Scalar(hMax, sMax, vMax);
-      
-      Mat result = imgProcessor.getHSVFilter(minRange, maxRange);
-      camController.pushFrameToDash(result);
-      
-    } else if (tuningMode == 3) {
-      shooter.manualControl(leftStick);
-      
-      double minArea = prefs.getDouble("minArea", 0);
-      double minShapeScore = prefs.getDouble("minShapeScore", 0);
-      double maxShapeScore = prefs.getDouble("maxShapeScore", 2);
-      
-      Scalar minHsvRange = imgProcessor.DEFAULT_HSV_LOWER_BOUNDS;
-      Scalar maxHsvRange = imgProcessor.DEFAULT_HSV_UPPER_BOUNDS;
-      Mat result = imgProcessor.getHSVFilter(minHsvRange, maxHsvRange);
-      
-      ArrayList<MatOfPoint> contours = imgProcessor.findContours(result);
-      for (int i = contours.size()-1; i >= 0; i--) {
-        boolean passesAreaTest = imgProcessor.passesAreaTest(contours.get(i), minArea);
-        boolean passesShapeTest = imgProcessor.passesShapeTest(contours.get(i), minShapeScore, maxShapeScore);
-        if (!(passesAreaTest && passesShapeTest)) {
-          contours.remove(i);
-        }
-      }
-      
-      result = imgProcessor.drawContours(true, contours);
-      camController.pushFrameToDash(result);
-    }
-    
-    // Publish all data to smart dash
-    shooter.publishDataToSmartDash();
-    imgProcessor.publishDataToSmartDash();
-  }
-  
-  
-  
-  
+  } 
   
   public void testInit() {
     
