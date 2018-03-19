@@ -118,18 +118,20 @@ public class Robot extends TimedRobot {
   
   
   //Camera code
-  CameraServer server = CameraServer.getInstance();
-  private JakeCamera jakeCamera = JakeCamera.getInstance();
   
-  private UsbCamera topCam = new UsbCamera("topCam", 0);
-  private UsbCamera botCam = new UsbCamera("botCam", 1);
+  CameraServer server = CameraServer.getInstance();
+  //private JakeCamera jakeCamera = JakeCamera.getInstance();
+  
+  private UsbCamera topCam;
+  //private UsbCamera botCam = new UsbCamera("botCam", cam1);
   
   private final int IMAGE_WIDTH_PIXELS = 160;
   private final int IMAGE_HEIGHT_PIXELS = 120;
+  /*
   CvSink cvSink;
   CvSource cvSource;
   Mat currentFrame;
-  
+  */
   
   
   
@@ -156,19 +158,21 @@ public class Robot extends TimedRobot {
 	  autoChooser.addObject("Long/Right Side", 3);
 	  SmartDashboard.putData("Auto Chooser", autoChooser);
 	  
-	  
+	  /*
 	  topCam.setResolution(IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
-	  topCam.setFPS(15);
+	  topCam.setFPS(10);
 	  topCam.setExposureAuto();
 	  topCam.setBrightness(50);
 	  topCam.setWhiteBalanceAuto();
-	  
+	  */
+	  topCam = server.startAutomaticCapture(0);
+	  /*
 	  botCam.setResolution(IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
-	  botCam.setFPS(15);
+	  botCam.setFPS(10);
 	  botCam.setExposureAuto();
 	  botCam.setBrightness(50);
 	  botCam.setWhiteBalanceAuto();
-	  
+	  */
 	  
 	  
 	  /*
@@ -244,21 +248,21 @@ public class Robot extends TimedRobot {
     	
     }
     
-    cvSink.setSource(topCam);
-	cvSink.grabFrame(currentFrame);
-    cvSource.putFrame(currentFrame);
+    //cvSink.setSource(topCam);
+	//cvSink.grabFrame(currentFrame);
+    //cvSource.putFrame(currentFrame);
   }
   
   
   
   
   public void teleopInit() {
-	  cvSink.setSource(botCam);
+	  //cvSink.setSource(botCam);
   }
 
   public void teleopPeriodic() {
 	  
-	  
+	  /*
 	  if (rightStick.getRawButtonPressed(3)) {
 		  cvSink.setSource(topCam);
 			
@@ -270,7 +274,7 @@ public class Robot extends TimedRobot {
 	  cvSink.grabFrame(currentFrame);
 	  cvSource.putFrame(currentFrame);
 	  
-	  
+	  */
 	  
     // Driving
     driveTrain.arcadeDrive(-rightStick.getY(), rightStick.getX());

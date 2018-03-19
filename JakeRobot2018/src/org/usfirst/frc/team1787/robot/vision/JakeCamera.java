@@ -28,8 +28,8 @@ public class JakeCamera {
 		
 	    
 	    /* Configure settings like resolution, exposure, white balance, etc. */
-	    configCam(topCam); // <- "true" indicates cam will be used for image processing
-	    configCam(botCam);
+	    //configCam(topCam); // <- "true" indicates cam will be used for image processing
+	    //configCam(botCam);
 	    
 	    // used to push processed frames to the dashboard for viewing.
 	    //outputStream = camServer.putVideo("Custom Camera Stream", IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
