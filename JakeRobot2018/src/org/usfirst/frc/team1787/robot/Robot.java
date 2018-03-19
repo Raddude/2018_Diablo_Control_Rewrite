@@ -253,7 +253,7 @@ public class Robot extends TimedRobot {
   
   
   public void teleopInit() {
-    
+	  cvSink.setSource(botCam);
   }
 
   public void teleopPeriodic() {
