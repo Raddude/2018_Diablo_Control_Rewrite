@@ -14,7 +14,11 @@ import org.usfirst.frc.team1787.robot.subsystems.Turret;
 import org.usfirst.frc.team1787.robot.subsystems.Winch;
 import org.usfirst.frc.team1787.robot.vision.CameraController;
 import org.usfirst.frc.team1787.robot.vision.ImageProcessor;
+import org.usfirst.frc.team1787.robot.vision.JakeCamera;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -106,8 +110,32 @@ public class Robot extends TimedRobot {
   String gameData;
   private int autonomousTimer;
   
+  
+  
+  
+  
+  
+  
+  
   //Camera code
   CameraServer server = CameraServer.getInstance();
+  private JakeCamera jakeCamera = JakeCamera.getInstance();
+  
+  private UsbCamera topCam = new UsbCamera("topCam", 0);
+  private UsbCamera botCam = new UsbCamera("botCam", 1);
+  
+  private final int IMAGE_WIDTH_PIXELS = 160;
+  private final int IMAGE_HEIGHT_PIXELS = 120;
+  CvSink cvSink;
+  CvSource cvSource;
+  Mat currentFrame;
+  
+  
+  
+  
+  
+  
+  
   
   
   /* ----------------------------------------------------------------
@@ -129,8 +157,19 @@ public class Robot extends TimedRobot {
 	  SmartDashboard.putData("Auto Chooser", autoChooser);
 	  
 	  
-	  server.startAutomaticCapture(0);
-	  //server.startAutomaticCapture(1);
+	  topCam.setResolution(IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
+	  topCam.setFPS(15);
+	  topCam.setExposureAuto();
+	  topCam.setBrightness(50);
+	  topCam.setWhiteBalanceAuto();
+	  
+	  botCam.setResolution(IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
+	  botCam.setFPS(15);
+	  botCam.setExposureAuto();
+	  botCam.setBrightness(50);
+	  botCam.setWhiteBalanceAuto();
+	  
+	  
 	  
 	  /*
 	   * TODO:
@@ -204,6 +243,10 @@ public class Robot extends TimedRobot {
     	
     	
     }
+    
+    cvSink.setSource(topCam);
+	cvSink.grabFrame(currentFrame);
+    cvSource.putFrame(currentFrame);
   }
   
   
@@ -214,6 +257,21 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
+	  
+	  
+	  if (rightStick.getRawButtonPressed(3)) {
+		  cvSink.setSource(topCam);
+			
+	  }
+	  else if (rightStick.getRawButtonPressed(4)) {
+		  cvSink.setSource(botCam);
+	  }
+	  
+	  cvSink.grabFrame(currentFrame);
+	  cvSource.putFrame(currentFrame);
+	  
+	  
+	  
     // Driving
     driveTrain.arcadeDrive(-rightStick.getY(), rightStick.getX());
 	  //driveTrain.tryCurveDrive(rightStick.getY(), -rightStick.getX(), rightStick.getRawButton(EXPELL_BUTTON));
