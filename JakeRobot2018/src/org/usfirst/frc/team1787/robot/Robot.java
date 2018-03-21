@@ -12,8 +12,6 @@ import org.usfirst.frc.team1787.robot.subsystems.Intake;
 import org.usfirst.frc.team1787.robot.subsystems.Shooter;
 import org.usfirst.frc.team1787.robot.subsystems.Turret;
 import org.usfirst.frc.team1787.robot.subsystems.Winch;
-import org.usfirst.frc.team1787.robot.vision.CameraController;
-import org.usfirst.frc.team1787.robot.vision.ImageProcessor;
 import org.usfirst.frc.team1787.robot.vision.JakeCamera;
 
 import edu.wpi.cscore.CvSink;
@@ -91,8 +89,6 @@ public class Robot extends TimedRobot {
   private Intake pickupArm = Intake.getInstance();
   private Shooter shooter = Shooter.getInstance();
   private Winch winch = Winch.getInstance();
-  private CameraController camController = CameraController.getInstance();
-  private ImageProcessor imgProcessor = ImageProcessor.getInstance();
   private AutoMethods auto = AutoMethods.getInstance();
   
   /* These subsystems are normally controlled collectively through the Shooter class,
@@ -120,18 +116,14 @@ public class Robot extends TimedRobot {
   //Camera code
   
   CameraServer server = CameraServer.getInstance();
-  //private JakeCamera jakeCamera = JakeCamera.getInstance();
   
   private UsbCamera topCam;
-  //private UsbCamera botCam = new UsbCamera("botCam", cam1);
+  private UsbCamera botCam;
   
   private final int IMAGE_WIDTH_PIXELS = 160;
   private final int IMAGE_HEIGHT_PIXELS = 120;
-  /*
-  CvSink cvSink;
-  CvSource cvSource;
-  Mat currentFrame;
-  */
+  
+  
   
   
   
@@ -158,21 +150,23 @@ public class Robot extends TimedRobot {
 	  autoChooser.addObject("Long/Right Side", 3);
 	  SmartDashboard.putData("Auto Chooser", autoChooser);
 	  
-	  /*
-	  topCam.setResolution(IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
-	  topCam.setFPS(10);
-	  topCam.setExposureAuto();
-	  topCam.setBrightness(50);
-	  topCam.setWhiteBalanceAuto();
-	  */
+	  
+	  
+	  
 	  topCam = server.startAutomaticCapture(0);
-	  /*
+	  botCam = server.startAutomaticCapture(1);
+	  
 	  botCam.setResolution(IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
 	  botCam.setFPS(10);
 	  botCam.setExposureAuto();
 	  botCam.setBrightness(50);
 	  botCam.setWhiteBalanceAuto();
-	  */
+	  topCam.setResolution(IMAGE_WIDTH_PIXELS, IMAGE_HEIGHT_PIXELS);
+	  topCam.setFPS(10);
+	  topCam.setExposureAuto();
+	  topCam.setBrightness(50);
+	  topCam.setWhiteBalanceAuto();
+	  
 	  
 	  
 	  /*
@@ -247,35 +241,16 @@ public class Robot extends TimedRobot {
     	
     	
     }
-    
-    //cvSink.setSource(topCam);
-	//cvSink.grabFrame(currentFrame);
-    //cvSource.putFrame(currentFrame);
   }
   
   
   
   
   public void teleopInit() {
-	  //cvSink.setSource(botCam);
   }
 
   public void teleopPeriodic() {
-	  
-	  /*
-	  if (rightStick.getRawButtonPressed(3)) {
-		  cvSink.setSource(topCam);
-			
-	  }
-	  else if (rightStick.getRawButtonPressed(4)) {
-		  cvSink.setSource(botCam);
-	  }
-	  
-	  cvSink.grabFrame(currentFrame);
-	  cvSource.putFrame(currentFrame);
-	  
-	  */
-	  
+
     // Driving
     driveTrain.arcadeDrive(-rightStick.getY(), rightStick.getX());
 	  //driveTrain.tryCurveDrive(rightStick.getY(), -rightStick.getX(), rightStick.getRawButton(EXPELL_BUTTON));
